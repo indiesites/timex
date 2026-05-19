@@ -13,7 +13,7 @@ defmodule TimexTests do
 
   test "add" do
     date = Timex.to_datetime({{2015, 6, 24}, {14, 27, 52}})
-    expected = Timex.to_datetime({{2015, 7, 2}, {14, 27, 52}})
+    expected = %{Timex.to_datetime({{2015, 7, 2}, {14, 27, 52}}) | microsecond: {0, 6}}
     result = Timex.add(date, Duration.from_days(8))
     assert expected === result
   end
@@ -27,7 +27,7 @@ defmodule TimexTests do
 
   test "subtract" do
     date = Timex.to_datetime({{2015, 6, 24}, {14, 27, 52}})
-    expected = Timex.to_datetime({{2015, 6, 16}, {14, 27, 52}})
+    expected = %{Timex.to_datetime({{2015, 6, 16}, {14, 27, 52}}) | microsecond: {0, 6}}
     result = Timex.subtract(date, Duration.from_days(8))
     assert expected === result
   end
@@ -36,7 +36,7 @@ defmodule TimexTests do
     time = Timex.to_datetime({{2015, 6, 24}, {14, 27, 52}})
     time = %{time | microsecond: {910_000, 2}}
     subtracted = Timex.subtract(time, Duration.from_milliseconds(10))
-    assert subtracted.microsecond === {900_000, 2}
+    assert subtracted.microsecond === {900_000, 6}
   end
 
   test "weekday" do
@@ -481,12 +481,12 @@ defmodule TimexTests do
       assert Timex.between?(~T[00:00:00], ~T[23:00:00], ~T[00:00:00],
                cycled: true,
                inclusive: :end
-      )
+             )
 
       assert Timex.between?(~T[23:00:00], ~T[23:00:00], ~T[00:00:00],
-        cycled: true,
-        inclusive: :start
-      )
+               cycled: true,
+               inclusive: :start
+             )
     end
   end
 
@@ -944,9 +944,7 @@ defmodule TimexTests do
       result = apply(Timex, modifier_fn, [input])
 
       assert expected_result == result,
-             "#{modifier_fn} for #{type_fn}:\n#{inspect(expected_result)} should equal #{
-               inspect(result)
-             }"
+             "#{modifier_fn} for #{type_fn}:\n#{inspect(expected_result)} should equal #{inspect(result)}"
     end
   end
 end
